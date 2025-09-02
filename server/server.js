@@ -2,30 +2,78 @@ require("dotenv").config();
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
+const path = require("path");
+const multer = require("multer");
+const cookieParser = require("cookie-parser");
+
 const jwtLoginRoutes = require("./routes/routeAuth");
-const verifyToken = require("./middleware/jwtUserAuth");
+const isAuthenticate = require("./middleware/jwtUserAuth");
+const Video = require("./models/videoModelSchema");
+
 const app = express();
 const port = process.env.PORT || 4000;
 
+app.use(cookieParser());
 app.use(express.json());
 app.use(
   cors({
-    origin: "",
+    origin: "http://localhost:5173",
     credentials: true,
   })
 );
 
-//routes and token verify
+//using multer to upload files
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => cb(null, "uploads/"),
+  filename: (req, file, cb) => {
+    const ext = file.mimetype.split("/")[1];
+
+    cb(null, Date.now() + "." + ext);
+  },
+});
+
+const upload = multer({ storage });
+
+app.post(
+  "/upload",
+  isAuthenticate,
+  upload.single("video"),
+  async (req, res) => {
+    try {
+      const newVideo = new Video({
+        fileName: req.file.originalname,
+        filePath: `/uploads/${req.file.filename}`,
+        uploadedBy: req.user.id,
+      });
+      await newVideo.save();
+      res.json({
+        message: "Video is uploaded",
+        filePath: `/uploads/${req.file.filename}`,
+      });
+      console.log("Uploaded file", req.file);
+    } catch (error) {
+      res.status(500).json({ error: error.message });
+    }
+  }
+);
+
+//getting uploaded video files
+app.get("/files", async (req, res) => {
+  try {
+    const files = await Video.find();
+    res.json(files);
+  } catch (error) {
+    res.status(401).json({ error: error.message });
+  }
+});
+app.use("/uploads", express.static("uploads"));
+
+//routes -Login Register
 app.use("/routeAuth", jwtLoginRoutes);
-app.use("/jwtUserAuth", verifyToken);
 
 //connecting to mongodb
 mongoose.connect(process.env.MONGODB_URL).then(() => {
   console.log("Mongodb Connected");
-});
-
-app.get("/", (req, res) => {
-  res.json("Hello world");
 });
 
 app.listen(port, () => {

@@ -1,3 +1,16 @@
+@import "tailwindcss";
+
+button {
+  background: blue;
+  border: none;
+  padding: 2px 4px;
+  color: white;
+  font-weight: 600;
+  font-size: large;
+  margin: 4px;
+  cursor: pointer;
+}
+
 /* :root {
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;
   line-height: 1.5;
@@ -26,9 +39,8 @@ body {
   margin: 0;
   display: flex;
   /* place-items: center; */
-  /* min-width: 320px; */
-  /* min-height: 100vh; */
-}
+/* min-width: 320px; */
+/* min-height: 100vh; */
 
 /* h1 {
   font-size: 3.2em;
@@ -65,4 +77,4 @@ button:focus-visible {
   button {
     background-color: #f9f9f9;
   }
-} */ 
+} */

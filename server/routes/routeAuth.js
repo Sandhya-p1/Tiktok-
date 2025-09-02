@@ -7,12 +7,18 @@ const jwt = require("jsonwebtoken");
 //register
 router.post("/register", async (req, res) => {
   const { username, password } = req.body;
+  console.log("data on register:", req.body);
   try {
+    const existingUser = await User.findOne({ username });
+    if (existingUser)
+      return res.status(400).json({ message: "Username already exists" });
     const hashedPassword = await bcrypt.hash(password, 10);
     const user = new User({ username, password: hashedPassword });
     await user.save();
     res.json({ message: "User is registered" });
   } catch (error) {
+    console.log("Register error:", error);
+
     res.status(400).json({ error: error.message });
   }
 });
@@ -21,7 +27,7 @@ router.post("/register", async (req, res) => {
 router.post("/login", async (req, res) => {
   const { username, password } = req.body;
   try {
-    const user = await User.find({ username });
+    const user = await User.findOne({ username });
     if (!user) return res.status(400).json({ message: "User not found " });
     const isMatch = await bcrypt.compare(password, user.password);
     if (!isMatch)
@@ -42,3 +48,5 @@ router.post("/login", async (req, res) => {
     res.status(400).json({ error: error.message });
   }
 });
+
+module.exports = router;

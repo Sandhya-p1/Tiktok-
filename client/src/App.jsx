@@ -1,14 +1,20 @@
 import "./App.css";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
-import MyProfile from "./pages/myProfile";
 import Feed from "./pages/feed";
+import RecordingVideo from "./pages/recordingVideo";
+import Login from "./pages/login";
+import Register from "./pages/register";
+import MyProfile from "./pages/myProfile";
 function App() {
   return (
     <>
       <Router>
         <Routes>
-          <Route path="/feed" element={<Feed />} />
-          <Route path="/myprofile" element={<MyProfile />} />
+          <Route path="/myfeed" element={<Feed />} />
+          <Route path="/myProfile" element={<MyProfile />} />
+          <Route path="/recordingvideo" element={<RecordingVideo />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/register" element={<Register />} />
         </Routes>
       </Router>
     </>
