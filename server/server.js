@@ -2,13 +2,13 @@ require("dotenv").config();
 const express = require("express");
 const mongoose = require("mongoose");
 const cors = require("cors");
-const path = require("path");
 const multer = require("multer");
 const cookieParser = require("cookie-parser");
 
 const jwtLoginRoutes = require("./routes/routeAuth");
 const isAuthenticate = require("./middleware/jwtUserAuth");
 const Video = require("./models/videoModelSchema");
+const likeUnlikeRoutes = require("./routes/LikeUnlike");
 
 const app = express();
 const port = process.env.PORT || 4000;
@@ -50,7 +50,7 @@ app.post(
         message: "Video is uploaded",
         filePath: `/uploads/${req.file.filename}`,
       });
-      console.log("Uploaded file", req.file);
+      // console.log("Uploaded file", req.file);
     } catch (error) {
       res.status(500).json({ error: error.message });
     }
@@ -58,18 +58,32 @@ app.post(
 );
 
 //getting uploaded video files
-app.get("/files", async (req, res) => {
+app.get("/files", isAuthenticate, async (req, res) => {
   try {
-    const files = await Video.find();
+    const files = await Video.find({ uploadedBy: req.user.id }).populate(
+      "uploadedBy",
+      "username"
+    );
     res.json(files);
   } catch (error) {
     res.status(401).json({ error: error.message });
   }
 });
+//getting videos for the feed
+app.get("/files/feed", async (req, res) => {
+  try {
+    const files = await Video.find().populate("uploadedBy", "username");
+    res.json(files);
+  } catch (error) {
+    res.status(401).json({ error: error.message });
+  }
+});
+
 app.use("/uploads", express.static("uploads"));
 
-//routes -Login Register
+//routes
 app.use("/routeAuth", jwtLoginRoutes);
+app.use("/likeUnlikeVideos", likeUnlikeRoutes);
 
 //connecting to mongodb
 mongoose.connect(process.env.MONGODB_URL).then(() => {

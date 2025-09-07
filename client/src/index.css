@@ -1,6 +1,16 @@
 @import "tailwindcss";
 
-button {
+@layer utilities {
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  .no-scrollbar {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+}
+
+/* button {
   background: blue;
   border: none;
   padding: 2px 4px;
@@ -9,7 +19,7 @@ button {
   font-size: large;
   margin: 4px;
   cursor: pointer;
-}
+} */
 
 /* :root {
   font-family: system-ui, Avenir, Helvetica, Arial, sans-serif;

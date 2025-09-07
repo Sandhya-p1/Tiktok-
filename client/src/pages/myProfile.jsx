@@ -21,6 +21,7 @@ const MyProfile = () => {
         const res = await fetch("http://localhost:4000/files", {
           method: "GET",
           credentials: "include",
+          headers: { "Content-Type": "application/json" },
         });
         const data = await res.json();
         setVideos(data);
@@ -44,7 +45,9 @@ const MyProfile = () => {
       </nav>
       <div className="UserProfile flex flex-col justify-center items-center p-4 gap-2 mt-6 mb-20">
         <FaUserCircle size={80} />
-        <h3>Sandhya</h3>
+        <h3 className="text-white">
+          {videos.length > 0 ? videos[0]?.uploadedBy.username : "Unknown"}
+        </h3>
       </div>
       <div className="icons flex justify-around p-4">
         <FaList size={18} />
@@ -54,7 +57,11 @@ const MyProfile = () => {
       </div>
       <hr className="border-spacing-0.5 border-white" />
       <div className="videosList grid grid-cols-4 justify-center">
-        {videos &&
+        {!Array.isArray(videos) ? (
+          <p>Create Videos</p>
+        ) : videos.length === 0 ? (
+          <p>Create Videos</p>
+        ) : (
           videos.map((video) => (
             <div key={video._id}>
               <video controls className="border h-44 w-full">
@@ -64,7 +71,8 @@ const MyProfile = () => {
                 />
               </video>
             </div>
-          ))}
+          ))
+        )}
       </div>
     </div>
   );

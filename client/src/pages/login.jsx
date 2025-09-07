@@ -26,7 +26,7 @@ const Login = () => {
     } catch (error) {
       console.log("network error", error);
       alert("Couldnt login, navigating to register");
-      navigate("/register");
+      navigate("/");
     }
   };
 
@@ -46,7 +46,7 @@ const Login = () => {
         />
         <button>Login</button>
       </form>
-      <a href="/register">
+      <a href="/">
         <button>Register Here !</button>
       </a>
     </div>

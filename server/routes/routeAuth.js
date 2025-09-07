@@ -1,5 +1,7 @@
+require("dotenv").config();
 const express = require("express");
 const router = express.Router();
+
 const bcrypt = require("bcrypt");
 const User = require("../models/userModelSchema");
 const jwt = require("jsonwebtoken");
@@ -7,7 +9,7 @@ const jwt = require("jsonwebtoken");
 //register
 router.post("/register", async (req, res) => {
   const { username, password } = req.body;
-  console.log("data on register:", req.body);
+  // console.log("data on register:", req.body);
   try {
     const existingUser = await User.findOne({ username });
     if (existingUser)
@@ -17,7 +19,7 @@ router.post("/register", async (req, res) => {
     await user.save();
     res.json({ message: "User is registered" });
   } catch (error) {
-    console.log("Register error:", error);
+    // console.log("Register error:", error);
 
     res.status(400).json({ error: error.message });
   }
@@ -47,6 +49,19 @@ router.post("/login", async (req, res) => {
   } catch (error) {
     res.status(400).json({ error: error.message });
   }
+});
+
+//logout
+router.post("/logout", async (req, res) => {
+  res
+    .clearCookie("token", {
+      httpOnly: true,
+      secure: false,
+      sameSite: "lax",
+      maxAge: 1000 * 60 * 60,
+    })
+
+    .json({ message: "logout successful" });
 });
 
 module.exports = router;

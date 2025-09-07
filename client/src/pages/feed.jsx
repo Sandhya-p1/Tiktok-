@@ -1,128 +1,147 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 
 import {
-  FaCircle,
+  FaBookmark,
   FaCommentDots,
   FaHeart,
   FaHome,
   FaInbox,
   FaPlus,
-  FaSave,
   FaSearch,
   FaShare,
   FaUser,
-  FaUserCircle,
   FaUsers,
 } from "react-icons/fa";
-import InfiniteScroll from "react-infinite-scroll-component";
-import postsData from "../components/images";
-import { Link, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 const Feed = () => {
-  const [posts, setPosts] = useState([]);
-  const [page, setPage] = useState(1);
-  const [hasMore, setHasMore] = useState(true);
-  // const limit = 3;
   const navigate = useNavigate();
+  const [videos, setVideos] = useState([]);
+  // const [likedVideos, setLikedVideos] = useState([]);
 
-  //fetching posts -images
-  // const fetchPosts = async () => {
-  //   // const res = await fetch("");
-  //   // const data = await res.json();
-  //   const data = postsData.slice(posts.length, posts.length + 40);
+  const fetchedVideos = async () => {
+    try {
+      const res = await fetch("http://localhost:4000/files/feed", {
+        method: "GET",
+        credentials: "include",
+      });
+      const data = await res.json();
+      setVideos(data);
+      console.log("Fetched data in feed:", data);
+    } catch (error) {
+      console.log("Error fetching data:", error);
+    }
+  };
 
-  //   if (data.length === 0) {
-  //     setHasMore(false);
-  //     return;
-  //   }
-  //   setPosts((prev) => [...prev, ...data]);
-  //   setPage((prev) => prev + 1);
-  // };
+  useEffect(() => {
+    fetchedVideos();
+  }, []);
 
-  // useEffect(() => {
-  //   fetchPosts();
-  // }, []);
+  const handleDoubleClick = async (videoId) => {
+    try {
+      const res = await fetch(
+        `http://localhost:4000/likeUnlikeVideos/likeUnlike/${videoId}`,
+        {
+          method: "PUT",
+          credentials: "include",
+          headers: { "Content-Type": "application/json" },
+        }
+      );
+      const data = await res.json();
+      setVideos((prev) =>
+        prev.map((video) =>
+          video._id === videoId ? { ...video, likedBy: data.likedBy } : video
+        )
+      );
+
+      console.log({ data });
+    } catch (error) {
+      console.log("Error fetching liked data");
+    }
+  };
 
   return (
-    <div className="feed relative flex flex-col h-[100vh] p-0 m-0 ">
-      <div className="scrollableImage absolute top-0 bottom-0 left-0 right-0 z-0 overflow-y-auto overflow-x-hidden  ">
-        {/* <img src={img} className="image w-full h-[100%]" /> */}
-        {/* <InfiniteScroll
-          dataLength={posts.length}
-          next={fetchPosts}
-          hasMore={hasMore}
-          loader={<h4>Loading.....</h4>}
-          endMessage={<p>You've reached to the last</p>}
-        >
-          {posts &&
-            posts.map((post) => (
-              <div key={post.id} className="p-8 border-2 m-3">
-                <img src={post.image} className="w-full h-[100%]" />
-              </div>
-            ))}
-        </InfiniteScroll> */}
-      </div>
-
-      {/* Top  section */}
-      <nav className="feedNav p-[1rem] shrink-0 flex items-center justify-between z-50">
+    <div className=" relative h-screen w-full ">
+      {/* navbar section */}
+      <nav className="flex justify-evenly bg-transparent items-center sticky top-0  w-full z-50   p-6">
         <h3>Following</h3>
-        <div className="rightSideNav flex items-center">
-          <h3>For You</h3>
-          <h3 className="search ml-[2rem]">
-            <FaSearch />{" "}
-          </h3>
-        </div>
+        <h3>For You</h3>
+        <FaSearch />
       </nav>
 
-      <div className="feedMiddleAndFooter flex flex-col justify-start flex-1 m-0 p-0">
-        <div className="feedMiddleSection p-[1rem] flex justify-between items-baseline flex-1 overflow-hidden relative right-0 left-0 bottom-[5rem]">
-          <div className="feedMiddleLeftPart  absolute bottom-0 flex flex-col justify-end ">
-            <h3>Sandhya Pandey</h3>
-            <p>here goes the caption that user typed</p>
-          </div>
-
-          {/* right side */}
-          <div className="feedMiddleRightPart  absolute bottom-0 right-2 grid gap-y-[18px] place-items-center">
-            <FaUserCircle size={45} />
-            <FaHeart size={28} />
-            <FaCommentDots size={28} />
-            <FaSave size={28} />
-            <div>
-              <FaShare size={28} />
-              <p>Share</p>
+      <div className="h-screen  w-full scroll-smooth no-scrollbar  overflow-y-scroll snap-y snap-mandatory">
+        {!Array.isArray(videos) || videos.length === 0 ? (
+          <p>No any videos yet</p>
+        ) : (
+          videos.map((video) => (
+            <div key={video._id} className="h-full w-full snap-start relative">
+              <video
+                autoPlay
+                className="h-full w-full "
+                onDoubleClick={() => handleDoubleClick(video._id)}
+              >
+                <source
+                  src={`http://localhost:4000${video.filePath}`}
+                  type="video/webm"
+                />
+              </video>
+              <div className="absolute bottom-2 w-full z-50 p-4 flex justify-between items-end">
+                {/* middle part  */}
+                {/* left part */}
+                <div>
+                  <h3>{video?.uploadedBy.username}</h3>
+                  <p>I'm making the tiktok app.</p>
+                </div>
+                {/* right part */}
+                <div className="flex flex-col items-center">
+                  <div className="mb-4 inline place-items-center">
+                    <FaHeart
+                      size={20}
+                      className={`${
+                        video.likedBy.length > 0 ? "fill-red-600" : "fill-white"
+                      }`}
+                    />
+                    <p>{video.likedBy.length}</p>
+                  </div>
+                  <FaCommentDots size={20} className="mb-4" />
+                  <FaBookmark size={20} className="mb-4" />
+                  <FaShare size={20} className="mb-4" />
+                </div>
+              </div>
             </div>
-            <FaCircle size={35} />
+          ))
+        )}
+      </div>
+      {/* footer */}
+      <div className="sticky bottom-0 w-full bg-black z-50">
+        <hr />
+        <div className="flex justify-around items-center mt-3">
+          <div className="grid place-items-center gap-y-1">
+            <FaHome size={20} />
+            <p className="text-[14px]">Home</p>
           </div>
-        </div>
+          <div className="grid place-items-center gap-y-1">
+            <FaUsers size={20} />
+            <p className="text-[14px]">Friends</p>
+          </div>
 
-        {/* Footer Section */}
-        <div className="feedFooter flex justify-around items-center shrink-0 bg-black p-[10px] absolute bottom-0 right-0 left-0 ">
-          <div className="footerIcons">
-            <FaHome />
-            <p>Home</p>
+          <div
+            className="grid place-items-center gap-y-1"
+            onClick={() => navigate("/recordingvideo")}
+          >
+            <FaPlus size={20} />
           </div>
-          <div className="footerIcons">
-            <FaUsers />
-            <p>Friends</p>
+          <div className="grid place-items-center gap-y-1">
+            <FaInbox size={20} />
+            <p className="text-[14px]">Inbox</p>
           </div>
-          <div className="footerIcons">
-            <Link to="/recordingvideo">
-              <button className="cursor-pointer">
-                {" "}
-                <FaPlus />
-              </button>
-            </Link>
-          </div>
-          <div className="footerIcons">
-            <FaInbox />
-            <p> Inbox</p>
-          </div>
-          <div className="footerIcons">
-            <FaUser
-              onClick={() => navigate("/myProfile")}
-              className="cursor-pointer"
-            />
-            <p>Profile</p>
+          <div
+            className="grid place-items-center gap-y-1 cursor-pointer"
+            onClick={() => navigate("/myProfile")}
+          >
+            <FaUser size={20} />
+
+            <p className="text-[14px] ">Profile</p>
           </div>
         </div>
       </div>
