@@ -9,6 +9,7 @@ const jwtLoginRoutes = require("./routes/routeAuth");
 const isAuthenticate = require("./middleware/jwtUserAuth");
 const Video = require("./models/videoModelSchema");
 const likeUnlikeRoutes = require("./routes/LikeUnlike");
+const commentRoutes = require("./routes/comment");
 
 const app = express();
 const port = process.env.PORT || 4000;
@@ -84,6 +85,7 @@ app.use("/uploads", express.static("uploads"));
 //routes
 app.use("/routeAuth", jwtLoginRoutes);
 app.use("/likeUnlikeVideos", likeUnlikeRoutes);
+app.use("/commentsData", commentRoutes);
 
 //connecting to mongodb
 mongoose.connect(process.env.MONGODB_URL).then(() => {

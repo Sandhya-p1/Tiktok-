@@ -16,7 +16,7 @@ function App() {
           <Route path="/myProfile" element={<MyProfile />} />
           <Route path="/recordingvideo" element={<RecordingVideo />} />
           <Route path="/login" element={<Login />} />
-          <Route path="/comment" element={<CommentPage />} />
+          <Route path="/comment/:videoId" element={<CommentPage />} />
         </Routes>
       </Router>
     </>

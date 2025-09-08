@@ -13,6 +13,7 @@ import {
   FaUsers,
 } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
+// import CommentPage from "./commentPage";
 
 const Feed = () => {
   const navigate = useNavigate();
@@ -103,7 +104,12 @@ const Feed = () => {
                     />
                     <p>{video.likedBy.length}</p>
                   </div>
-                  <FaCommentDots size={20} className="mb-4" />
+
+                  <FaCommentDots
+                    size={20}
+                    className="mb-4"
+                    onClick={() => navigate(`/comment/${video._id}`)}
+                  />
                   <FaBookmark size={20} className="mb-4" />
                   <FaShare size={20} className="mb-4" />
                 </div>
