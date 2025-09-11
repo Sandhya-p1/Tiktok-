@@ -23,6 +23,7 @@ app.use(
   })
 );
 
+//all about video
 //using multer to upload files
 const storage = multer.diskStorage({
   destination: (req, file, cb) => cb(null, "uploads/"),
@@ -80,7 +81,28 @@ app.get("/files/feed", async (req, res) => {
   }
 });
 
+//deleting video
+app.delete("/deleteVideo/:videoId", isAuthenticate, async (req, res) => {
+  try {
+    const video = await Video.findById(req.params.videoId);
+
+    if (!video) {
+      return res.status(404).json({ message: "video is not found" });
+    }
+
+    if (video.uploadedBy.toString() !== req.user._id.toString()) {
+      return res.status(403).json({ message: "Not Authorized" });
+    }
+    await video.deleteOne();
+
+    res.status(200).json({ message: "Video deleted successfully", video });
+  } catch (error) {
+    return res.status(500).json({ error: error.message });
+  }
+});
+
 app.use("/uploads", express.static("uploads"));
+// all about video above
 
 //routes
 app.use("/routeAuth", jwtLoginRoutes);

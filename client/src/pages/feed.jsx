@@ -9,6 +9,8 @@ import {
   FaPlus,
   FaSearch,
   FaShare,
+  FaTrash,
+  FaTrashAlt,
   FaUser,
   FaUsers,
 } from "react-icons/fa";
@@ -61,6 +63,25 @@ const Feed = () => {
     }
   };
 
+  const handleVideoDelete = async (videoId) => {
+    try {
+      const res = await fetch(`http://localhost:4000/deleteVideo/${videoId}`, {
+        method: "DELETE",
+        credentials: "include",
+      });
+      if (res.status === 403) {
+        alert("You are not authorized to delete this video!!");
+        return;
+      }
+      const deletingData = await res.json();
+      setVideos(videos.filter((video) => video._id !== videoId));
+      console.log({ deletingData });
+    } catch (error) {
+      console.log("error deleting video data", error);
+      // res.json({ error: error.message });
+    }
+  };
+
   return (
     <div className=" relative h-screen w-full ">
       {/* navbar section */}
@@ -107,11 +128,16 @@ const Feed = () => {
 
                   <FaCommentDots
                     size={20}
-                    className="mb-4"
+                    className="mb-4 cursor-pointer"
                     onClick={() => navigate(`/comment/${video._id}`)}
                   />
-                  <FaBookmark size={20} className="mb-4" />
-                  <FaShare size={20} className="mb-4" />
+                  <FaBookmark size={20} className="mb-4 cursor-pointer" />
+                  <FaShare size={20} className="mb-4 cursor-pointer" />
+                  <FaTrashAlt
+                    onClick={() => handleVideoDelete(video._id)}
+                    size={18}
+                    className="cursor-pointer hover:fill-red-800"
+                  />
                 </div>
               </div>
             </div>

@@ -40,9 +40,9 @@ router.get("/comments/:videoId", async (req, res) => {
 router.delete("/delete/:commentId", isAuthenticate, async (req, res) => {
   try {
     const comment = await Comment.findById(req.params.commentId);
-    if (!comment) return res.status(404).json("Comment not found");
+    if (!comment) return res.status(404).json({ message: "Comment not found" });
     if (comment.userId.toString() !== req.user._id.toString())
-      return res.status(403).json("Not authorized");
+      return res.status(403).json({ message: "Not authorized" });
     await comment.deleteOne();
 
     res.json(comment);

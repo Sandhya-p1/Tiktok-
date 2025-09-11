@@ -10,9 +10,11 @@ import {
   FaUserCircle,
 } from "react-icons/fa";
 import { useNavigate } from "react-router-dom";
+import Sidebar from "../components/sidebar";
 
 const MyProfile = () => {
   const [videos, setVideos] = useState([]);
+  const [showLoginOptions, setShowLoginOptions] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -41,7 +43,13 @@ const MyProfile = () => {
           onClick={() => navigate("/myfeed")}
           className="cursor-pointer hover:outline-red-700"
         />
-        <FaBars size={26} />
+        <div>
+          <FaBars
+            size={20}
+            className="cursor-pointer"
+            onClick={() => setShowLoginOptions(!showLoginOptions)}
+          />
+        </div>
       </nav>
       <div className="UserProfile flex flex-col justify-center items-center p-4 gap-2 mt-6 mb-20">
         <FaUserCircle size={80} />
@@ -74,6 +82,14 @@ const MyProfile = () => {
           ))
         )}
       </div>
+      {showLoginOptions && (
+        <div
+          className="inset-0 z-40 bg-black opacity-40 fixed"
+          onClick={() => setShowLoginOptions(false)}
+        />
+      )}
+
+      <Sidebar isOpen={showLoginOptions} />
     </div>
   );
 };
