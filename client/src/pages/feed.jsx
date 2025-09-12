@@ -45,8 +45,6 @@ const Feed = () => {
   };
 
   const handleDoubleClick = async (videoId) => {
-    console.log("Double clicked videoId:", videoId); // make sure it’s not undefined
-
     try {
       const res = await fetch(
         `http://localhost:4000/likeUnlikeVideos/likeUnlike/${videoId}`,
