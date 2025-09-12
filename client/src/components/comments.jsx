@@ -1,14 +1,14 @@
 import { useState, useEffect } from "react";
 import { FaTrash } from "react-icons/fa";
-import { useParams } from "react-router-dom";
 
-const CommentPage = () => {
+const Comments = ({ isOpen, activeVideoId }) => {
   const [comment, setComment] = useState("");
   const [commentList, setCommentList] = useState([]);
 
-  const { videoId } = useParams();
+  const videoId = activeVideoId;
 
   const fetchComments = async () => {
+    if (!videoId) return;
     try {
       const res = await fetch(
         `http://localhost:4000/commentsData/comments/${videoId}`,
@@ -80,7 +80,12 @@ const CommentPage = () => {
   };
 
   return (
-    <div className="bg-white h-full text-black p-4 relative">
+    <div
+      className={`fixed p-4  text-black bottom-0 h-36 rounded-t-2xl left-0 right-0 z-50 bg-white  block space-y-2 
+  transition-transform ease-in-out duration-300
+  ${isOpen ? "translate-y-0" : "translate-y-full"}
+  `}
+    >
       <nav className="flex justify-between items-center">
         <p></p>
         <p className="font-semibold text-[16px]">Comments</p>
@@ -98,7 +103,7 @@ const CommentPage = () => {
               key={comment._id}
               className="flex  items-center space-x-4 relative"
             >
-              <img className="h-8 w-8 bg-pink-800 rounded-full" />
+              {/* <img className="h-8 w-8 bg-pink-800 rounded-full" /> */}
 
               <div className="inline items-center space-x-2">
                 <h2 className="font-semibold text-[16px] text-neutral-400">
@@ -118,7 +123,7 @@ const CommentPage = () => {
 
       {/* Footer section */}
       <div className="absolute bottom-0 flex  items-center w-full p-4 ">
-        <img className="rounded-full w-10 h-10  bg-gray-200" src="" />
+        {/* <img className="rounded-full w-10 h-10  bg-gray-200" src="" /> */}
         <input
           className="bg-gray-200 p-2 mx-4 w-[60%] rounded-2xl border-none outline-none placeholder-gray-400"
           type="text"
@@ -138,4 +143,4 @@ const CommentPage = () => {
   );
 };
 
-export default CommentPage;
+export default Comments;

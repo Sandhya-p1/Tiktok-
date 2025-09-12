@@ -74,7 +74,9 @@ app.get("/files", isAuthenticate, async (req, res) => {
 //getting videos for the feed
 app.get("/files/feed", async (req, res) => {
   try {
-    const files = await Video.find().populate("uploadedBy", "username");
+    const files = await Video.find()
+      .populate("uploadedBy", "username")
+      .sort({ uploadedAt: -1 });
     res.json(files);
   } catch (error) {
     res.status(401).json({ error: error.message });
