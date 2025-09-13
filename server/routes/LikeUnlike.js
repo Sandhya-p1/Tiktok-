@@ -11,7 +11,7 @@ router.put("/likeUnlike/:videoId", isAuthenticate, async (req, res) => {
     const video = await Video.findById(videoId);
     if (!video) return res.status(404).json({ message: "Video is not found" });
 
-    if (video.likedBy.includes(userId)) {
+    if (video.likedBy.some((id) => id.equals(userId))) {
       video.likedBy.pull(userId);
     } else {
       video.likedBy.push(userId);

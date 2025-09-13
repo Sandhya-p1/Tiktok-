@@ -3,7 +3,7 @@ const mongoose = require("mongoose");
 const videoSchema = new mongoose.Schema({
   fileName: String,
   filePath: String,
-  uploadedBy: { type: String, ref: "User" },
+  uploadedBy: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
   uploadedAt: { type: Date, default: Date.now },
   likedBy: [
     {
@@ -13,7 +13,7 @@ const videoSchema = new mongoose.Schema({
   ],
   commentedBy: [
     {
-      type: String,
+      type: mongoose.Schema.Types.ObjectId,
       ref: "User",
     },
   ],
